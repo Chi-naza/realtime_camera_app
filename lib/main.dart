@@ -1,5 +1,6 @@
-import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
+import 'package:camera/camera.dart';
+import 'package:realtime_camera_app/realtime_image_detection/camera_screen.dart';
 
 late List<CameraDescription> _cameras;
 
@@ -22,88 +23,40 @@ class MyApp extends StatelessWidget {
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
         useMaterial3: true,
       ),
-      home: const CameraScreen(),
+      home: const HomeScreen(),
     );
   }
 }
 
-class CameraScreen extends StatefulWidget {
-  const CameraScreen({super.key});
-
-  @override
-  State<CameraScreen> createState() => _CameraScreenState();
-}
-
-class _CameraScreenState extends State<CameraScreen> {
-  late CameraController controller;
-
-  String result = "Result Will Be Shown Here";
-  bool isBusy = false;
-  CameraImage? image;
-
-  @override
-  void initState() {
-    super.initState();
-    // initialize controller with the back camera (i.e 0 index)
-    controller = CameraController(_cameras[0], ResolutionPreset.max);
-    // initialize the camera of the device
-    controller.initialize().then((_) {
-      if (!mounted) {
-        return;
-      }
-
-      // Start streaming images from platform camera.
-      controller.startImageStream((img) {
-        if (!isBusy) {
-          isBusy = true;
-          image = img;
-          doImageLabelling();
-        }
-      });
-
-      // update state
-      setState(() {});
-    }).catchError((Object e) {
-      if (e is CameraException) {
-        switch (e.code) {
-          case 'CameraAccessDenied':
-            debugPrint("Camera Access Denied: $e");
-            break;
-          default:
-            debugPrint("Something Went Wrong with the Camera: $e");
-            break;
-        }
-      }
-    });
-  }
-
-  @override
-  void dispose() {
-    controller.dispose();
-    super.dispose();
-  }
+class HomeScreen extends StatelessWidget {
+  const HomeScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return !controller.value.isInitialized
-        ? Container()
-        : Stack(
-            fit: StackFit.expand,
-            children: [
-              CameraPreview(controller),
-              Container(
-                alignment: Alignment.bottomCenter,
-                margin: const EdgeInsets.only(bottom: 40),
-                child: Text(
-                  result,
-                  style: const TextStyle(fontSize: 20, color: Colors.white),
-                ),
-              ),
-            ],
-          );
-  }
-
-  void doImageLabelling() {
-    print("Streaming going now");
+    return Scaffold(
+      body: Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            ElevatedButton(
+              onPressed: () {
+                Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) => CameraScreen(cameras: _cameras)));
+              },
+              child: const Text("Image Camera Screen"),
+            ),
+            ElevatedButton(
+              onPressed: () {
+                Navigator.push(context,
+                    MaterialPageRoute(builder: (context) => Scaffold()));
+              },
+              child: const Text("Object Screen"),
+            ),
+          ],
+        ),
+      ),
+    );
   }
 }

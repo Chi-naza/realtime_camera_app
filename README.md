@@ -1,4 +1,8 @@
 # realtime_camera_app
 
-This app is still in progress . . .
+A realtime camera feed app
+
+## AI and Image classification
+    - Realtime Image detection and classification
+    - RealtimenObject Detection
 
