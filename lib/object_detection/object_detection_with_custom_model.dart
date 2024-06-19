@@ -7,14 +7,16 @@ import 'package:realtime_camera_app/widgets/text_n_value_widget.dart';
 
 import 'dart:ui' as ui;
 
-class ObjectDetectionScreen extends StatefulWidget {
-  const ObjectDetectionScreen({super.key});
+class CustomModelObjectDetectionScreen extends StatefulWidget {
+  const CustomModelObjectDetectionScreen({super.key});
 
   @override
-  State<ObjectDetectionScreen> createState() => _ObjectDetectionScreenState();
+  State<CustomModelObjectDetectionScreen> createState() =>
+      _CustomModelObjectDetectionScreenState();
 }
 
-class _ObjectDetectionScreenState extends State<ObjectDetectionScreen> {
+class _CustomModelObjectDetectionScreenState
+    extends State<CustomModelObjectDetectionScreen> {
   File? _image;
   late ImagePicker imagePicker;
 
