@@ -1,9 +1,12 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:google_mlkit_object_detection/google_mlkit_object_detection.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:path_provider/path_provider.dart';
 import 'package:realtime_camera_app/widgets/text_n_value_widget.dart';
+import 'package:path/path.dart';
 
 import 'dart:ui' as ui;
 
@@ -29,6 +32,7 @@ class _CustomModelObjectDetectionScreenState
 
   // decoded image
   var decodedImage;
+
   int imgWidth = 0;
   int imgHeight = 0;
 
@@ -37,15 +41,7 @@ class _CustomModelObjectDetectionScreenState
     // init image picker
     imagePicker = ImagePicker();
 
-    // Options to configure the detector while using with base model.
-    final options = ObjectDetectorOptions(
-      mode: DetectionMode.single,
-      classifyObjects: true,
-      multipleObjects: true,
-    );
-
-    objectDetector = ObjectDetector(options: options);
-
+    loadCustomModel();
     // call super
     super.initState();
   }
@@ -223,7 +219,6 @@ class _CustomModelObjectDetectionScreenState
     }
 
     setState(() {});
-
     drawRectanglesAroundObj();
   }
 
@@ -238,6 +233,31 @@ class _CustomModelObjectDetectionScreenState
     decodedImage = deImage;
 
     setState(() {});
+  }
+
+  // get the path of the custom ml model
+  Future<String> getModelPath(String asset) async {
+    final path = '${(await getApplicationSupportDirectory()).path}/$asset';
+    await Directory(dirname(path)).create(recursive: true);
+    final file = File(path);
+    if (!await file.exists()) {
+      final byteData = await rootBundle.load(asset);
+      await file.writeAsBytes(byteData.buffer
+          .asUint8List(byteData.offsetInBytes, byteData.lengthInBytes));
+    }
+    return file.path;
+  }
+
+  Future<void> loadCustomModel() async {
+    final modelPath = await getModelPath('assets/ml/fruits_tm.tflite');
+    final options = LocalObjectDetectorOptions(
+      mode: DetectionMode.single,
+      modelPath: modelPath,
+      classifyObjects: true,
+      multipleObjects: true,
+    );
+
+    objectDetector = ObjectDetector(options: options);
   }
 }
 
